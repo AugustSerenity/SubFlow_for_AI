@@ -1,5 +1,12 @@
-from datetime import date
+from datetime import date, datetime
 from decimal import Decimal
+from uuid import UUID
+
+from app.domain.enums import (
+    CategoryType,
+    RecurrenceType,
+    StatusType,
+)
 
 from pydantic import BaseModel, Field, field_validator
 
@@ -26,9 +33,20 @@ class ObligationsRequest(BaseModel):
             raise ValueError(f"Валюта должна быть одной из: {', '.join(allowed)}")
         return value
 
+class ObligationResponseParams(BaseModel):
+    id: UUID
+    title: str
+    amount: Decimal
+    currency: str
+    category: CategoryType
+    recurrence: RecurrenceType | None
+    next_payment_date: date
+    status: StatusType
+    created_at: datetime
+    updated_at: datetime
 
 class ObligationsResponse(BaseModel):
-    obligation: str
+    obligation: ObligationResponseParams
     warning: str | None = Field(
         default=None,
         description="Активное обязательство с таким названием уже существует"
