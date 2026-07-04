@@ -1,2 +1,4 @@
-# SubFlow_for_AI
-Smart Subscription Registry
+# Умный реестр подписок
+
+
+## [Задание](app/docs/task.pdf)
