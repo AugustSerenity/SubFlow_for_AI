@@ -1,0 +1,48 @@
+version: "3.8"
+
+services:
+  postgres-service:
+    image: postgres:15
+    container_name: postgres_db
+    environment:
+      POSTGRES_USER: ${POSTGRES_USER}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
+      POSTGRES_DB: ${POSTGRES_DB}
+    ports:
+      - "5433:5432"
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U postgres -d subflow"]
+      interval: 5s
+      timeout: 5s
+      retries: 10
+
+
+  migration:
+    build: .
+    command: alembic upgrade head
+    depends_on:
+      postgres-service:
+        condition: service_healthy
+    environment:
+      DATABASE_URL: postgresql+asyncpg://postgres:postgres@postgres-service:5432/subflow
+
+
+  app:
+    build: .
+    container_name: fastapi_app
+    ports:
+      - "8000:8000"
+    depends_on:
+      postgres-service:
+        condition: service_healthy
+      migration:
+        condition: service_completed_successfully
+    environment:
+      DATABASE_URL: postgresql+asyncpg://postgres:postgres@postgres-service:5432/subflow
+    restart: on-failure
+
+
+volumes:
+  postgres_data:
