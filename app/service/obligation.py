@@ -1,11 +1,12 @@
 from datetime import date
+from app.repository.obligations import ObligationRepository
 
 from app.domain.enums import StatusType
 from app.domain.model import Obligation
 
 
 class ObligationService:
-    def __init__(self, repository):
+    def __init__(self, repository: ObligationRepository):
         self.repository = repository
 
     async def create(self, data):
@@ -33,9 +34,9 @@ class ObligationService:
             status=status,
         )
 
-        result_obl = await self.repository.create_obligation(obligation)
+        obligation_res = await self.repository.create_obligation(obligation)
 
-        return {"obligation":result_obl,
+        return {"obligation":obligation_res,
                 "warning":warning
                 }
 

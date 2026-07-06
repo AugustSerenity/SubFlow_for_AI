@@ -2,7 +2,7 @@ from fastapi import APIRouter, Depends
 
 from app.schemas.obligation import ObligationsRequest, ObligationsResponse
 from app.service.obligation import ObligationService
-from app.api.depends import get_obligation_service
+from app.db.depends import get_obligation_service
 
 router = APIRouter()
 
@@ -11,5 +11,4 @@ async def create_obligation(
     obligations_data: ObligationsRequest,
     service: ObligationService = Depends(get_obligation_service)
 ):
-    result = await service.get_obligation(obligations_data)
-    return result
+    return await service.create(obligations_data)
