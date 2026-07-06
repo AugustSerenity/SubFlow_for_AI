@@ -1,13 +1,12 @@
-from sqlalchemy.ext.asyncio import (
-    AsyncSession,
-    async_sessionmaker,
-    create_async_engine,
-)
+import os
+from sqlalchemy.ext.asyncio import create_async_engine, async_sessionmaker, AsyncSession
+from dotenv import load_dotenv
 from collections.abc import AsyncGenerator
 
-DATABASE_URL = (
-    "postgresql+asyncpg://postgres:postgres@db:5432/subflow"
-)
+
+load_dotenv()
+
+DATABASE_URL = os.getenv("DATABASE_URL")
 
 engine = create_async_engine(
     DATABASE_URL,
