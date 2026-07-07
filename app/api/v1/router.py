@@ -5,6 +5,6 @@ api_router = APIRouter(prefix="/v1")
 
 api_router.include_router(
     obl.router,
-    prefix="/handlers",
-    tags=["handlers"]
+    prefix="/obligations",
+    tags=["obligations"]
 )

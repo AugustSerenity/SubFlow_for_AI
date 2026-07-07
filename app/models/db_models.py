@@ -1,8 +1,9 @@
-from datetime import date, datetime
+from datetime import date, datetime, timezone
 from decimal import Decimal
+from typing import Optional
 from uuid import UUID, uuid4
 
-from sqlalchemy import Date, DateTime, Enum, Numeric, String
+from sqlalchemy import Date, DateTime, Numeric, String
 from sqlalchemy.dialects.postgresql import UUID as PGUUID
 from sqlalchemy.orm import Mapped, mapped_column
 
@@ -39,12 +40,12 @@ class ObligationORM(Base):
     )
 
     category: Mapped[CategoryType] = mapped_column(
-        Enum(CategoryType),
+        String(50),
         nullable=False,
     )
 
-    recurrence: Mapped[RecurrenceType | None] = mapped_column(
-        Enum(RecurrenceType),
+    recurrence: Mapped[Optional[RecurrenceType]] = mapped_column(
+        String(50),
         nullable=True,
     )
 
@@ -54,19 +55,19 @@ class ObligationORM(Base):
     )
 
     status: Mapped[StatusType] = mapped_column(
-        Enum(StatusType),
+        String(50),
         nullable=False,
     )
 
     created_at: Mapped[datetime] = mapped_column(
-        DateTime,
-        default=datetime.utcnow,
+        DateTime(timezone=True),
+        default=lambda: datetime.now(timezone.utc),
         nullable=False,
     )
 
     updated_at: Mapped[datetime] = mapped_column(
-        DateTime,
-        default=datetime.utcnow,
-        onupdate=datetime.utcnow,
+        DateTime(timezone=True),
+        default=lambda: datetime.now(timezone.utc),
+        onupdate=lambda: datetime.now(timezone.utc),
         nullable=False,
     )

@@ -1,5 +1,3 @@
-version: "3.8"
-
 services:
   postgres-service:
     image: postgres:15
@@ -13,7 +11,7 @@ services:
     volumes:
       - postgres_data:/var/lib/postgresql/data
     healthcheck:
-      test: ["CMD-SHELL", "pg_isready -U postgres -d subflow"]
+      test: ["CMD-SHELL", "pg_isready -U ${POSTGRES_USER} -d ${POSTGRES_DB}"]
       interval: 5s
       timeout: 5s
       retries: 10
@@ -21,13 +19,19 @@ services:
 
   migration:
     build: .
-    command: alembic upgrade head
+    command: >
+      sh -c "
+        echo '=== Files in versions ===' &&
+        ls -la /app/alembic/versions/ &&
+        echo '=== Running migrations ===' &&
+        alembic upgrade head &&
+        echo '=== Migrations done ==='
+      "
     depends_on:
       postgres-service:
         condition: service_healthy
     environment:
-      DATABASE_URL: postgresql+asyncpg://postgres:postgres@postgres-service:5432/subflow
-
+      DATABASE_URL: postgresql+asyncpg://${POSTGRES_USER}:${POSTGRES_PASSWORD}@postgres-service:5432/${POSTGRES_DB}
 
   app:
     build: .
@@ -40,9 +44,8 @@ services:
       migration:
         condition: service_completed_successfully
     environment:
-      DATABASE_URL: postgresql+asyncpg://postgres:postgres@postgres-service:5432/subflow
+      DATABASE_URL: postgresql+asyncpg://${POSTGRES_USER}:${POSTGRES_PASSWORD}@postgres-service:5432/${POSTGRES_DB}
     restart: on-failure
-
 
 volumes:
   postgres_data:

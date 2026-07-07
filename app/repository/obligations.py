@@ -44,11 +44,7 @@ class ObligationRepository:
 
         return self._to_domain(orm)
 
-    def _to_domain(
-            self,
-            orm: ObligationORM,
-    ) -> Obligation:
-
+    def _to_domain(self, orm: ObligationORM) -> Obligation:
         return Obligation(
             id=orm.id,
             title=orm.title,
@@ -58,13 +54,11 @@ class ObligationRepository:
             recurrence=orm.recurrence,
             next_payment_date=orm.next_payment_date,
             status=orm.status,
+            created_at=orm.created_at,
+            updated_at=orm.updated_at,
         )
 
-    def _to_orm(
-            self,
-            domain: Obligation,
-    ) -> ObligationORM:
-
+    def _to_orm(self, domain: Obligation) -> ObligationORM:
         return ObligationORM(
             title=domain.title,
             amount=domain.amount,
@@ -73,4 +67,6 @@ class ObligationRepository:
             recurrence=domain.recurrence,
             next_payment_date=domain.next_payment_date,
             status=domain.status,
+            created_at=domain.created_at,
+            updated_at=domain.updated_at,
         )
